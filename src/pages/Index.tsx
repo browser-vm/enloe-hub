@@ -22,9 +22,9 @@ const Index = () => {
         {/* Header */}
         <header className="text-center space-y-2">
           <h1 className="text-4xl md:text-5xl font-bold text-[#006241]">
-            Enloe High School
+            Enloe Time
           </h1>
-          <p className="text-lg text-[#006241]/70">Interactive Dashboard</p>
+          <p className="text-lg text-[#006241]/70">Alex's Version</p>
         </header>
 
         {/* Clock */}
