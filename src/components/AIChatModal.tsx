@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Bot, User, Sparkles } from "lucide-react";
+import { Streamdown } from "streamdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -172,10 +173,14 @@ export const AIChatModal = ({ open, onOpenChange }: AIChatModalProps) => {
                   className={`max-w-[80%] p-3 rounded-lg ${
                     message.role === "user"
                       ? "bg-[#006241] text-white"
-                      : "bg-white border border-[#006241]/20"
+                      : "bg-white border border-[#006241]/20 prose prose-sm max-w-none"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                  {message.role === "assistant" ? (
+                    <Streamdown>{message.content}</Streamdown>
+                  ) : (
+                    <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                  )}
                 </div>
                 {message.role === "user" && (
                   <div className="w-8 h-8 rounded-full bg-[#FFCD00] flex items-center justify-center flex-shrink-0">
