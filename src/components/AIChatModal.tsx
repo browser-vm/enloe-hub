@@ -36,10 +36,13 @@ interface AIChatModalProps {
 }
 
 const MODELS = [
-  { value: "google/gemini-2.5-flash", label: "Gemini Flash", cost: "$0.075/M in" },
-  { value: "google/gemini-2.5-flash-lite", label: "Gemini Flash Lite", cost: "$0.02/M in" },
-  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", cost: "$0.15/M in" },
-  { value: "openai/gpt-5-nano", label: "GPT-5 Nano", cost: "$0.05/M in" },
+  { value: "google/gemini-2.5-flash", label: "Gemini Flash", cost: "$0.075/M in", provider: "Google" },
+  { value: "google/gemini-2.5-flash-lite", label: "Gemini Flash Lite", cost: "$0.02/M in", provider: "Google" },
+  { value: "openai/gpt-5-mini", label: "GPT-5 Mini", cost: "$0.15/M in", provider: "OpenAI" },
+  { value: "openai/gpt-5-nano", label: "GPT-5 Nano", cost: "$0.05/M in", provider: "OpenAI" },
+  { value: "mistral-small-latest", label: "Mistral Small", cost: "$0.10/M in", provider: "Mistral" },
+  { value: "mistral-large-latest", label: "Mistral Large", cost: "$2.00/M in", provider: "Mistral" },
+  { value: "open-mistral-nemo", label: "Mistral Nemo", cost: "$0.15/M in", provider: "Mistral" },
 ];
 
 export const AIChatModal = ({ open, onOpenChange }: AIChatModalProps) => {
