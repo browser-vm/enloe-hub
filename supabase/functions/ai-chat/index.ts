@@ -41,7 +41,7 @@ serve(async (req) => {
 
     const systemMessage = { 
       role: "system", 
-      content: "You are a helpful AI assistant for Enloe High School students. Be friendly, concise, and helpful. You can help with homework, answer questions, and provide information." 
+      content: "You are a helpful AI assistant. Be friendly, concise, and helpful. You can help with general questions, homework, coding, and more. Note: If asked about Enloe High School specifically, let the user know you don't currently have access to web search to look up school-specific information, but that feature is coming soon!" 
     };
 
     let response;
