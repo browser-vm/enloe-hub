@@ -34,22 +34,75 @@ export const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      img.onload = () => {
+        // Calculate new dimensions (max 1920px on longest side)
+        let { width, height } = img;
+        const maxDim = 1920;
+        
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = (height / width) * maxDim;
+            width = maxDim;
+          } else {
+            width = (width / height) * maxDim;
+            height = maxDim;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        // Try WebP first, fallback to JPEG
+        let result = canvas.toDataURL('image/webp', 0.85);
+        if (result.length > 2 * 1024 * 1024) {
+          result = canvas.toDataURL('image/webp', 0.7);
+        }
+        if (result.length > 2 * 1024 * 1024) {
+          result = canvas.toDataURL('image/jpeg', 0.7);
+        }
+        
+        resolve(result);
+      };
+      
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Check file size (max 2MB for localStorage)
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Image too large. Please choose an image under 2MB.');
+    // Check file size (max 8MB)
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Image too large. Please choose an image under 8MB.');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setBackgroundImage(result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // If over 2MB, compress to WebP
+      if (file.size > 2 * 1024 * 1024) {
+        const compressed = await compressImage(file);
+        setBackgroundImage(compressed);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setBackgroundImage(result);
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error('Failed to process image:', error);
+      alert('Failed to process image. Please try another.');
+    }
     
     // Reset input
     if (fileInputRef.current) {
@@ -116,7 +169,7 @@ export const SettingsModal = ({ open, onOpenChange }: SettingsModalProps) => {
                 >
                   <Upload className="h-6 w-6 text-[#006241]/50 mb-1" />
                   <span className="text-sm text-[#006241]/50">Click to upload</span>
-                  <span className="text-xs text-[#006241]/30">Max 2MB</span>
+                  <span className="text-xs text-[#006241]/30">Max 8MB (auto-compressed)</span>
                 </div>
               )}
               <input
