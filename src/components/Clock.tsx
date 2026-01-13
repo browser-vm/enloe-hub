@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { useCustomization } from "@/contexts/CustomizationContext";
 
 export const Clock = () => {
   const [time, setTime] = useState(new Date());
+  const { hasCustomBackground } = useCustomization();
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -27,8 +29,12 @@ export const Clock = () => {
     });
   };
 
+  const cardClasses = hasCustomBackground
+    ? "p-6 bg-white/40 backdrop-blur-md border border-white/30 shadow-xl"
+    : "p-6 bg-white/80 backdrop-blur-sm border-2 border-[#006241]/20 shadow-lg";
+
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border-2 border-[#006241]/20 shadow-lg">
+    <Card className={cardClasses}>
       <div className="text-center">
         <p className="text-5xl md:text-7xl font-mono font-bold text-[#006241]">
           {formatTime(time)}
