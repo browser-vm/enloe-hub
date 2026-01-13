@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useCustomization } from "@/contexts/CustomizationContext";
 
 interface Period {
   name: string;
@@ -41,6 +42,7 @@ interface ScheduleProgressProps {
 export const ScheduleProgress = ({ isALunch }: ScheduleProgressProps) => {
   const [currentMinutes, setCurrentMinutes] = useState(getCurrentMinutes());
   const schedule = isALunch ? A_LUNCH_SCHEDULE : B_LUNCH_SCHEDULE;
+  const { hasCustomBackground, settings } = useCustomization();
 
   useEffect(() => {
     const interval = setInterval(() => setCurrentMinutes(getCurrentMinutes()), 1000);
@@ -69,8 +71,12 @@ export const ScheduleProgress = ({ isALunch }: ScheduleProgressProps) => {
     return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
 
+  const cardClasses = hasCustomBackground
+    ? "p-6 bg-white/40 backdrop-blur-md border border-white/30 shadow-xl space-y-4"
+    : "p-6 bg-white/80 backdrop-blur-sm border-2 border-[#006241]/20 shadow-lg space-y-4";
+
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border-2 border-[#006241]/20 shadow-lg space-y-4">
+    <Card className={cardClasses}>
       <h2 className="text-2xl font-bold text-[#006241] text-center mb-4">
         {isALunch ? "A-Lunch" : "B-Lunch"} Schedule
       </h2>
@@ -81,9 +87,15 @@ export const ScheduleProgress = ({ isALunch }: ScheduleProgressProps) => {
             key={index}
             className={`p-4 rounded-lg transition-all ${
               status === "active"
-                ? "bg-[#006241]/10 border-2 border-[#006241] scale-[1.02]"
+                ? hasCustomBackground
+                  ? "bg-white/50 border-2 border-[#006241] scale-[1.02]"
+                  : "bg-[#006241]/10 border-2 border-[#006241] scale-[1.02]"
                 : status === "completed"
-                ? "bg-gray-100 opacity-60"
+                ? hasCustomBackground
+                  ? "bg-white/20 opacity-60"
+                  : "bg-gray-100 opacity-60"
+                : hasCustomBackground
+                ? "bg-white/30"
                 : "bg-[#FFCD00]/10"
             }`}
           >
@@ -97,6 +109,7 @@ export const ScheduleProgress = ({ isALunch }: ScheduleProgressProps) => {
                 {status === "active" && (
                   <span className="ml-2 text-sm bg-[#006241] text-white px-2 py-0.5 rounded-full">
                     NOW
+                    {settings.showPercentage && ` - ${Math.round(progress)}%`}
                   </span>
                 )}
               </span>
@@ -107,7 +120,7 @@ export const ScheduleProgress = ({ isALunch }: ScheduleProgressProps) => {
             <Progress
               value={progress}
               className={`h-3 ${
-                status === "active" ? "bg-[#FFCD00]/30" : "bg-gray-200"
+                status === "active" ? "bg-[#FFCD00]/30" : hasCustomBackground ? "bg-white/40" : "bg-gray-200"
               }`}
             />
           </div>
